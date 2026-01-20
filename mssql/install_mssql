@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+set -e
+
+# ==============================
+# Config
+# ==============================
+MSSQL_CONTAINER_NAME="mssql"
+MSSQL_SA_PASSWORD="Strong!Passw0rd"
+MSSQL_IMAGE="mcr.microsoft.com/mssql/server:2022-latest"
+MSSQL_PORT="1433"
+
+echo "[*] Starting MSSQL installation script..."
+
+# ==============================
+# Step 1. Install Docker
+# ==============================
+echo "[*] Installing Docker..."
+sudo apt update
+sudo apt install -y docker.io
+
+echo "[*] Enabling Docker service..."
+sudo systemctl enable --now docker
+
+# ==============================
+# Step 2. Run MSSQL Docker container
+# ==============================
+if sudo docker ps -a --format '{{.Names}}' | grep -q "^${MSSQL_CONTAINER_NAME}$"; then
+    echo "[*] MSSQL container already exists, removing..."
+    sudo docker rm -f ${MSSQL_CONTAINER_NAME}
+fi
+
+echo "[*] Running MSSQL Docker container..."
+sudo docker run -d \
+    --name ${MSSQL_CONTAINER_NAME} \
+    -e 'ACCEPT_EULA=Y' \
+    -e "MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD}" \
+    -p ${MSSQL_PORT}:1433 \
+    ${MSSQL_IMAGE}
+
+echo "[*] Waiting for MSSQL to be ready..."
+sleep 15
+
+# ==============================
+# Step 3. Install sqlcmd (ODBC Driver 18)
+# ==============================
+echo "[*] Installing Microsoft ODBC Driver and sqlcmd..."
+
+curl https://packages.microsoft.com/keys/microsoft.asc \
+    | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc
+
+curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list \
+    | sudo tee /etc/apt/sources.list.d/mssql-release.list
+
+sudo apt update
+sudo ACCEPT_EULA=Y apt install -y \
+    mssql-tools18 \
+    unixodbc-dev
+
+# ==============================
+# Step 4. PATH setup
+# ==============================
+if ! grep -q "mssql-tools18" ~/.bashrc; then
+    echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
+fi
+
+export PATH="$PATH:/opt/mssql-tools18/bin"
+
+# ==============================
+# Step 5. Test connection
+# ==============================
+echo "[*] Testing sqlcmd connection..."
+sqlcmd -S localhost,${MSSQL_PORT} -U sa -P "${MSSQL_SA_PASSWORD}" -C -Q "SELECT @@VERSION;"
+
+echo "[*] MSSQL installation and test completed successfully."
+
