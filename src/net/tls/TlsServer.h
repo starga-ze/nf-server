@@ -98,10 +98,9 @@ private:
     ThreadManager *m_threadManager;
     RxRouter *m_rxRouter;
 
-    std::vector <uint8_t> m_buffer;
-
     std::unordered_map<int, SSL *> m_sslMap;
     std::unordered_map<int, std::pair<sockaddr_in, sockaddr_in>> m_addrMap;
+    std::unordered_map<int, std::vector<uint8_t>> m_rxBuffer;
 
     std::mutex m_rxLock;
     std::condition_variable m_cv;
@@ -111,8 +110,7 @@ private:
     std::queue <HandoverItem> m_handoverQueue;
 
     std::mutex m_txLock;
-    std::unordered_map<int, std::deque<std::unique_ptr < Packet>>>
-    m_txQueue;
+    std::unordered_map<int, std::deque<std::unique_ptr < Packet>>> m_txQueue;
 };
 
 
