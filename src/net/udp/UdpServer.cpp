@@ -13,6 +13,11 @@
 #include <sys/eventfd.h>
 #include <arpa/inet.h>
 
+#define UDP_RECV_CHUNK_SIZE     (2048)
+#define UDP_MAX_RX_BUFFER_SIZE  (256 * 1024) // 256 KB
+#define UDP_MAX_EVENTS          (64)
+
+
 UdpServer::UdpServer(int port,
                      RxRouter *rxRouter,
                      int workerCount,
@@ -53,7 +58,7 @@ bool UdpServer::init() {
     setsockopt(m_sockFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
     // 수신 버퍼
-    int rcv = UDP_RECV_BUFFER_SIZE;
+    int rcv = UDP_MAX_RX_BUFFER_SIZE;
     setsockopt(m_sockFd, SOL_SOCKET, SO_RCVBUF, &rcv, sizeof(rcv));
 
     if (!setNonBlocking(m_sockFd)) {
@@ -120,7 +125,7 @@ void UdpServer::start() {
     startWorkers();
 
     epoll_event events[UDP_MAX_EVENTS];
-    m_buffer.resize(UDP_RECV_BUFFER_SIZE);
+    m_rxBuffer.resize(UDP_RECV_CHUNK_SIZE);
 
     while (m_running) {
         int n = epoll_wait(m_epFd, events, UDP_MAX_EVENTS, -1);
@@ -224,14 +229,14 @@ void UdpServer::receivePacket() {
     while (true) {
         ssize_t bytes = recvfrom(
                 m_sockFd,
-                m_buffer.data(),
-                m_buffer.size(),
+                m_rxBuffer.data(),
+                m_rxBuffer.size(),
                 0,
                 reinterpret_cast<sockaddr *>(&clientAddr),
                 &addrLen);
 
         if (bytes > 0) {
-            std::vector <uint8_t> payload(m_buffer.begin(), m_buffer.begin() + bytes);
+            std::vector <uint8_t> payload(m_rxBuffer.begin(), m_rxBuffer.begin() + bytes);
 
             auto pkt = std::make_unique<Packet>(
                     m_sockFd,

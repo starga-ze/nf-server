@@ -12,8 +12,8 @@
 
 #include <cstring>
 
-#define TLS_HEADER_SIZE        (sizeof(CommonPacketHeader))
-#define TLS_MAX_BODY_LEN       (64 * 1024)
+#define TLS_HEADER_SIZE        (sizeof(CommonPacketHeader)) // 8 Byte
+#define TLS_MAX_BODY_LEN       (64 * 1024) // 64 KB
 #define TLS_RECV_CHUNK_SIZE    (4096)
 #define TLS_MAX_RX_BUFFER_SIZE (TLS_HEADER_SIZE + TLS_MAX_BODY_LEN)
 #define TLS_MAX_EVENTS         (64)

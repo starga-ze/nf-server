@@ -18,13 +18,6 @@ class ThreadManager;
 
 class Packet;
 
-#ifndef UDP_RECV_BUFFER_SIZE
-#define UDP_RECV_BUFFER_SIZE (4 * 1024)
-#endif
-
-#ifndef UDP_MAX_EVENTS
-#define UDP_MAX_EVENTS 64
-#endif
 
 class UdpServer {
 public:
@@ -90,7 +83,7 @@ private:
     std::atomic<bool> m_running{false};
     int m_workerCount;
 
-    std::vector <uint8_t> m_buffer;
+    std::vector <uint8_t> m_rxBuffer;
 
     std::mutex m_rxLock;
     std::condition_variable m_cv;
