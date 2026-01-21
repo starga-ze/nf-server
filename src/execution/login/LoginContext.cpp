@@ -2,7 +2,9 @@
 #include "util/Logger.h"
 #include "execution/shard/ShardManager.h"
 #include "egress/ActionFactory.h"
+
 #include "execution/login/LoginAction.h"
+#include "execution/login/LoginEvent.h"
 
 #include <cstring>
 #include <string>
@@ -17,65 +19,41 @@ LoginContext::LoginContext(int shardIdx, ShardManager *shardManager, DbManager *
     m_shardIdx = shardIdx;
 }
 
-void LoginContext::handleEvent(std::unique_ptr <EventPacket> pkt) {
-    if (not pkt) {
-        return;
-    }
+void LoginContext::loginReqEvent(const LoginEvent& ev) {
+    const uint64_t sessionId = ev.sessionId();
+    const std::string_view id = ev.id();
+    const std::string_view pw = ev.pw();
 
-    const auto &body = pkt->getBody();
-    size_t bodyLen = body.size();
-    size_t offset = 0;
+    LOG_DEBUG("LOGIN_REQ received, [session={}, id='{}']", sessionId, id);
 
-    if (offset + sizeof(uint16_t) > bodyLen) {
-        return;
-    }
-
-    uint16_t idLen;
-    std::memcpy(&idLen, body.data() + offset, sizeof(uint16_t));
-    offset += sizeof(uint16_t);
-
-    if (offset + idLen > bodyLen) {
-        LOG_WARN("Invalid id length");
-        return;
-    }
-    std::string id(reinterpret_cast<const char *>(body.data() + offset), idLen);
-    offset += idLen;
-
-    if (offset + sizeof(uint16_t) > bodyLen) return;
-
-    uint16_t pwLen;
-    std::memcpy(&pwLen, body.data() + offset, sizeof(uint16_t));
-    offset += sizeof(uint16_t);
-
-    if (offset + pwLen > bodyLen) {
-        LOG_WARN("Invalid pw length");
-        return;
-    }
-    std::string pw(reinterpret_cast<const char *>(body.data() + offset), pwLen);
-
-    const uint64_t sessionId = pkt->getSessionId();
-    LOG_DEBUG("LOGIN_REQ received, [session = {}, id = '{}', pw = '{}']", sessionId, id, pw);
-
-    std::unique_ptr <Action> action;
+    std::unique_ptr<Action> action;
 
     if (m_enableDb) {
-        if (!verify(id, pw)) {
-            LOG_WARN("Login failed. [session = {}, id = '{}']", sessionId, id);
-            return;
+        if (!verify(std::string{id}, std::string{pw})) {
+            LOG_WARN("Login failed. [session={}, id='{}']", sessionId, id);
+            action = ActionFactory::create(Opcode::LOGIN_RES_FAIL, sessionId);
+        } else {
+            LOG_TRACE("Login success. [session={}, id='{}']", sessionId, id);
+            action = ActionFactory::create(Opcode::LOGIN_RES_SUCCESS, sessionId);
         }
-        LOG_TRACE("Login success. [session = {}, id = '{}']", sessionId, id);
     } else {
         LOG_WARN("Verify process intentionally passed.");
 
-        if (id == "test" and pw == "test") {
+        if (id == "test" && pw == "test") {
             LOG_DEBUG("Login Success");
             action = ActionFactory::create(Opcode::LOGIN_RES_SUCCESS, sessionId);
         } else {
             LOG_DEBUG("Login Failed");
             action = ActionFactory::create(Opcode::LOGIN_RES_FAIL, sessionId);
         }
-        m_shardManager->commit(m_shardIdx, std::move(action));
     }
+
+    if (!action) {
+        LOG_ERROR("Action creation failed. [session={}]", sessionId);
+        return;
+    }
+
+    m_shardManager->commit(m_shardIdx, std::move(action));
 }
 
 void LoginContext::loginSuccessAction(uint64_t sessionId) {

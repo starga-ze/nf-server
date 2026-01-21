@@ -21,10 +21,10 @@ public:
             std::vector <uint8_t> body
     );
 
-    std::unique_ptr <EventPacket> prepare();
-
     // getters
     int getFd() const;
+
+    std::vector<uint8_t> takeBody();
 
     const ConnInfo &getConnInfo() const;
 

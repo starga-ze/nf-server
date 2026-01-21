@@ -1,4 +1,5 @@
 #include "execution/login/LoginAction.h"
+#include "execution/login/LoginContext.h"
 
 LoginSuccessAction::LoginSuccessAction(uint64_t sessionId) :
         m_sessionId(sessionId) {

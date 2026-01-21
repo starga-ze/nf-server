@@ -17,10 +17,12 @@ ParsedPacket::ParsedPacket(int fd,
         m_opcode(opcode),
         m_flags(flags),
         m_sessionId(sessionId),
-        m_body(std::move(body)) {}
+        m_body(std::move(body)) 
+{
+}
 
-std::unique_ptr <EventPacket> ParsedPacket::prepare() {
-    return std::make_unique<EventPacket>(m_sessionId, m_opcode, std::move(m_body));
+std::vector<uint8_t> ParsedPacket::takeBody() {
+    return std::move(m_body);
 }
 
 int ParsedPacket::getFd() const {
@@ -46,4 +48,3 @@ uint32_t ParsedPacket::flags() const {
 uint64_t ParsedPacket::getSessionId() const {
     return m_sessionId;
 }
-

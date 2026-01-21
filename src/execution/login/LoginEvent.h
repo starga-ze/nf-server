@@ -1,18 +1,29 @@
 #pragma once
 
 #include "execution/Event.h"
-#include "net/packet/EventPacket.h"
 #include "execution/shard/ShardContext.h"
 
-#include <memory>
+#include <string_view>
+#include <vector>
 
 class LoginEvent final : public Event {
 public:
-    explicit LoginEvent(std::unique_ptr <EventPacket> pkt);
+    LoginEvent(
+        uint64_t sessionId,
+        std::vector<uint8_t> body,
+        std::string_view id,
+        std::string_view pw
+    );
 
-    void handleEvent(ShardContext &shardContext) override;
+    void handleEvent(ShardContext& shardContext) override;
+
+    std::string_view id() const { return m_id; }
+    std::string_view pw() const { return m_pw; }
+    
 
 private:
-    std::unique_ptr <EventPacket> m_pkt;
+    std::vector<uint8_t> m_body;   // owning
+    std::string_view    m_id;     // view into m_body
+    std::string_view    m_pw;
 };
 

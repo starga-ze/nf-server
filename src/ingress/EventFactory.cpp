@@ -1,18 +1,17 @@
 #include "util/Logger.h"
 #include "ingress/EventFactory.h"
-#include "execution/login/LoginEvent.h"
+#include "execution/login/LoginParser.h"
 #include "net/packet/ParsedPacket.h"
 
 std::unique_ptr <Event> EventFactory::create(ParsedPacket &parsed) {
-    std::unique_ptr <EventPacket> pkt = parsed.prepare();
 
     /* TODO: implement deserialize */
-    switch (pkt->getOpcode()) {
+    switch (parsed.opcode()) {
         case Opcode::LOGIN_REQ:
-            return std::make_unique<LoginEvent>(std::move(pkt));
+            return LoginParser::deserialize(parsed);
 
         default:
-            LOG_WARN("Unhandled opcode {}", static_cast<int>(pkt->getOpcode()));
+            LOG_WARN("Unhandled opcode {}", static_cast<int>(parsed.opcode()));
             return nullptr;
     }
 }

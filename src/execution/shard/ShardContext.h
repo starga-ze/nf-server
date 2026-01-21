@@ -1,11 +1,12 @@
 #pragma once
 
 #include "db/DbManager.h"
-#include "execution/login/LoginContext.h"
 
 #include <memory>
 
 class ShardManager;
+class LoginContext;
+class TxRouter;
 
 class ShardContext {
 public:

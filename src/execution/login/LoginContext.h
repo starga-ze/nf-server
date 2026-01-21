@@ -10,6 +10,7 @@
 #include <cstdint>
 
 class ShardManager;
+class LoginEvent;
 
 class LoginContext {
 public:
@@ -17,7 +18,7 @@ public:
 
     ~LoginContext() = default;
 
-    void handleEvent(std::unique_ptr <EventPacket> pkt);
+    void loginReqEvent(const LoginEvent& ev);
 
     void loginSuccessAction(uint64_t sessionId);
 
