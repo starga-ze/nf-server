@@ -17,50 +17,61 @@ std::unique_ptr<Event> LoginParser::deserialize(ParsedPacket& parsed)
 
 std::unique_ptr<Event> LoginParser::parseLoginReq(ParsedPacket& parsed)
 {
-    auto body = parsed.takeBody();
-    if (body.empty()) {
-        LOG_WARN("LOGIN_REQ: body is null");
+    auto payload = parsed.takePayload();
+
+    constexpr size_t HEADER_SIZE = 8;
+    const size_t bodyLen = parsed.bodySize();
+
+    if (payload.size() < HEADER_SIZE || payload.size() < HEADER_SIZE + bodyLen) {
+        LOG_WARN("LOGIN_REQ invalid payload size: payload={}, bodyLen={}",
+                 payload.size(), bodyLen);
         return nullptr;
     }
 
-    const auto& buf = body;
-    const size_t bodyLen = buf.size();
+    const uint8_t* buf = payload.data() + HEADER_SIZE;
+    size_t len = bodyLen;
+
     size_t offset = 0;
 
-    // id length
-    if (offset + sizeof(uint16_t) > bodyLen)
+    if (len < sizeof(uint16_t)) {
+        LOG_WARN("LOGIN_REQ body too short for idLen");
         return nullptr;
+    }
 
     uint16_t idLen;
-    std::memcpy(&idLen, buf.data() + offset, sizeof(uint16_t));
+    std::memcpy(&idLen, buf + offset, sizeof(uint16_t));
+    idLen = ntohs(idLen);
     offset += sizeof(uint16_t);
 
-    if (offset + idLen > bodyLen) {
-        LOG_WARN("Invalid id length");
+    if (offset + idLen > len) {
+        LOG_WARN("LOGIN_REQ invalid idLen: idLen={}, len={}", idLen, len);
         return nullptr;
     }
 
-    std::string_view id(
-        reinterpret_cast<const char*>(buf.data() + offset),
-        idLen);
+    std::string_view id(reinterpret_cast<const char*>(buf + offset), idLen);
     offset += idLen;
 
-    // pw length
-    if (offset + sizeof(uint16_t) > bodyLen)
-        return nullptr;
-
-    uint16_t pwLen;
-    std::memcpy(&pwLen, buf.data() + offset, sizeof(uint16_t));
-    offset += sizeof(uint16_t);
-
-    if (offset + pwLen > bodyLen) {
-        LOG_WARN("Invalid pw length");
+    if (offset + sizeof(uint16_t) > len) {
+        LOG_WARN("LOGIN_REQ body too short for pwLen");
         return nullptr;
     }
 
-    std::string_view pw(
-        reinterpret_cast<const char*>(buf.data() + offset),
-        pwLen);
+    uint16_t pwLen;
+    std::memcpy(&pwLen, buf + offset, sizeof(uint16_t));
+    pwLen = ntohs(pwLen);
+    offset += sizeof(uint16_t);
 
-    return std::make_unique<LoginEvent>(parsed.getSessionId(), std::move(body), id, pw);
+    if (offset + pwLen > len) {
+        LOG_WARN("LOGIN_REQ invalid pwLen: pwLen={}, len={}", pwLen, len);
+        return nullptr;
+    }
+
+    std::string_view pw(reinterpret_cast<const char*>(buf + offset), pwLen);
+
+    return std::make_unique<LoginEvent>(
+        parsed.getSessionId(),
+        std::move(payload),
+        id,
+        pw
+    );
 }

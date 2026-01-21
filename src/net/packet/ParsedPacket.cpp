@@ -10,19 +10,35 @@ ParsedPacket::ParsedPacket(int fd,
                            Opcode opcode,
                            uint32_t flags,
                            uint64_t sessionId,
-                           std::vector <uint8_t> body) :
+                           std::vector <uint8_t> payload,
+                           size_t bodyOffset,
+                           size_t bodyLen):
         m_fd(fd),
         m_connInfo(connInfo),
         m_version(version),
         m_opcode(opcode),
         m_flags(flags),
         m_sessionId(sessionId),
-        m_body(std::move(body)) 
+        m_payload(std::move(payload)),
+        m_bodyOffset(bodyOffset),
+        m_bodyLen(bodyLen)
 {
 }
 
-std::vector<uint8_t> ParsedPacket::takeBody() {
-    return std::move(m_body);
+std::vector<uint8_t> ParsedPacket::takePayload() {
+    return std::move(m_payload);
+}
+
+const uint8_t* ParsedPacket::bodyData() const {
+    return m_payload.data() + m_bodyOffset;
+}
+
+size_t ParsedPacket::bodySize() const {
+    return m_bodyLen;
+}
+
+const std::vector<uint8_t>& ParsedPacket::payload() const {
+    return m_payload;
 }
 
 int ParsedPacket::getFd() const {

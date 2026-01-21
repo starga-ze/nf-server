@@ -3,11 +3,11 @@
 
 LoginEvent::LoginEvent(
     uint64_t sessionId,
-    std::vector<uint8_t> body,
+    std::vector<uint8_t> payload,
     std::string_view id,
     std::string_view pw)
     : Event(sessionId)
-    , m_body(std::move(body))
+    , m_payload(std::move(payload))
     , m_id(id)
     , m_pw(pw)
 {

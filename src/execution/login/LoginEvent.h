@@ -10,7 +10,7 @@ class LoginEvent final : public Event {
 public:
     LoginEvent(
         uint64_t sessionId,
-        std::vector<uint8_t> body,
+        std::vector<uint8_t> payload,
         std::string_view id,
         std::string_view pw
     );
@@ -22,7 +22,7 @@ public:
     
 
 private:
-    std::vector<uint8_t> m_body;   // owning
+    std::vector<uint8_t> m_payload;   // owning
     std::string_view    m_id;     // view into m_body
     std::string_view    m_pw;
 };

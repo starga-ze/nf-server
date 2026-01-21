@@ -30,6 +30,8 @@ public:
 
     ~Packet();
 
+    std::vector<uint8_t> takePayload();
+
     std::string dump() const;
 
     int getFd() const;

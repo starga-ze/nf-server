@@ -23,6 +23,11 @@ Packet::Packet(int fd,
 Packet::~Packet() {
 }
 
+std::vector<uint8_t> Packet::takePayload()
+{
+    return std::move(m_payload);
+}
+
 std::string Packet::dump() const {
     std::ostringstream oss;
 

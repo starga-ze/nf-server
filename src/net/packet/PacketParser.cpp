@@ -13,9 +13,9 @@ std::optional <ParsedPacket> PacketParser::parse(std::unique_ptr <Packet> packet
         return std::nullopt;
     }
 
-    const auto &payload = packet->getPayload();
-    constexpr
-    size_t HEADER_SIZE = 8;
+    auto payload = packet->takePayload();
+    
+    constexpr size_t HEADER_SIZE = 8;
 
     if (payload.size() < HEADER_SIZE) {
         LOG_WARN("payload < header size");
@@ -40,11 +40,6 @@ std::optional <ParsedPacket> PacketParser::parse(std::unique_ptr <Packet> packet
         return std::nullopt;
     }
 
-    std::vector <uint8_t> body(
-            payload.begin() + HEADER_SIZE,
-            payload.begin() + HEADER_SIZE + bodyLen
-    );
-
     return ParsedPacket(
             packet->getFd(),
             packet->getConnInfo(),
@@ -52,7 +47,9 @@ std::optional <ParsedPacket> PacketParser::parse(std::unique_ptr <Packet> packet
             opcode,
             flags,
             resolveSessionId(*packet),
-            std::move(body)
+            std::move(payload),
+            HEADER_SIZE,
+            bodyLen
     );
 }
 

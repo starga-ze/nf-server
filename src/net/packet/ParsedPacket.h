@@ -18,13 +18,21 @@ public:
             Opcode opcode,
             uint32_t flags,
             uint64_t sessionId,
-            std::vector <uint8_t> body
+            std::vector <uint8_t> payload,
+            size_t bodyOffset,
+            size_t bodyLen
     );
+
+    std::vector<uint8_t> takePayload();
+
+    const uint8_t* bodyData() const;
+
+    size_t bodySize() const;
+
+    const std::vector<uint8_t>& payload() const;
 
     // getters
     int getFd() const;
-
-    std::vector<uint8_t> takeBody();
 
     const ConnInfo &getConnInfo() const;
 
@@ -45,8 +53,10 @@ private:
     PacketVersion m_version{};
     Opcode m_opcode{};
     uint32_t m_flags{};
-
     uint64_t m_sessionId{};
-    std::vector <uint8_t> m_body;
+
+    std::vector <uint8_t> m_payload;
+    size_t m_bodyOffset;
+    size_t m_bodyLen;
 };
 
