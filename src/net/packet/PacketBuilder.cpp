@@ -15,33 +15,8 @@ sockaddr_in PacketBuilder::createSockAddr(uint32_t ip, uint16_t port) {
     return addr;
 }
 
-
-std::unique_ptr <Packet> PacketBuilder::build(std::unique_ptr <ActionPacket> actionPacket,
-                                              const Session &session) {
-    if (!actionPacket)
-        return nullptr;
-
-    const Opcode opcode = actionPacket->getOpcode();
-
-    switch (opcode) {
-        case Opcode::LOGIN_RES_SUCCESS:
-        case Opcode::LOGIN_RES_FAIL:
-            return buildLoginRes(*actionPacket, session);
-
-        default:
-            LOG_WARN("PacketBuilder: unhandled opcode {}",
-                     static_cast<int>(opcode));
-            return nullptr;
-    }
-}
-
-std::unique_ptr <Packet> PacketBuilder::buildLoginRes(const ActionPacket &action,
+std::unique_ptr <Packet> PacketBuilder::build(const std::vector<uint8_t> payload,
                                                       const Session &session) {
-    const bool success =
-            (action.getOpcode() == Opcode::LOGIN_RES_SUCCESS);
-
-    auto payload = buildLoginResPayload(success);
-
     const Protocol protocol = session.getProtocol();
 
     switch (protocol) {
@@ -78,21 +53,4 @@ std::unique_ptr <Packet> PacketBuilder::buildLoginRes(const ActionPacket &action
     }
 }
 
-std::vector <uint8_t> PacketBuilder::buildLoginResPayload(bool success) {
-    const uint16_t bodyLenHost = sizeof(uint8_t);
-    const uint32_t flagsHost = 0;
 
-    CommonPacketHeader header;
-    header.version = PacketVersion::V1;
-    header.opcode = Opcode::LOGIN_RES_SUCCESS;
-    header.bodyLen = htons(bodyLenHost);
-    header.flags = htonl(flagsHost);
-
-    std::vector <uint8_t> payload;
-    payload.resize(sizeof(CommonPacketHeader) + bodyLenHost);
-
-    std::memcpy(payload.data(), &header, sizeof(CommonPacketHeader));
-    payload[sizeof(CommonPacketHeader)] = success ? 0x01 : 0x00;
-
-    return payload;
-}

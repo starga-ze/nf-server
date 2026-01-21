@@ -3,8 +3,9 @@
 #include "egress/TxRouter.h"
 #include "net/packet/ParsedPacket.h"
 #include "db/DbManager.h"
-#include "net/packet/EventPacket.h"
-#include "net/packet/ActionPacket.h"
+#include "execution/login/LoginAction.h"
+#include "execution/login/LoginEvent.h"
+
 
 #include <memory>
 #include <cstdint>
@@ -20,9 +21,9 @@ public:
 
     void loginReqEvent(const LoginReqEvent& ev);
 
-    void loginSuccessAction(uint64_t sessionId);
+    void loginSuccessAction(LoginSuccessAction& ac);
 
-    void loginFailAction(uint64_t sessionId);
+    void loginFailAction(LoginFailAction& ac);
 
     void setTxRouter(TxRouter *txRouter);
 

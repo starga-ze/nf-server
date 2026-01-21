@@ -56,26 +56,28 @@ void LoginContext::loginReqEvent(const LoginReqEvent& ev) {
     m_shardManager->commit(m_shardIdx, std::move(action));
 }
 
-void LoginContext::loginSuccessAction(uint64_t sessionId) {
-    LOG_DEBUG("LOGIN_RES_SUCCESS send, [session = {}]", sessionId);
+void LoginContext::loginSuccessAction(LoginSuccessAction& ac) {
     if (not m_txRouter) {
         LOG_FATAL("TxRouter is nullptr");
     }
 
-    auto pkt = std::make_unique<ActionPacket>(sessionId, Opcode::LOGIN_RES_SUCCESS);
+    const uint64_t sessionId = ac.sessionId();
 
-    m_txRouter->handlePacket(std::move(pkt));
+    auto payload = ac.takePayload();
+
+    m_txRouter->handlePacket(sessionId, std::move(payload));
 }
 
-void LoginContext::loginFailAction(uint64_t sessionId) {
-    LOG_DEBUG("LOGIN_RES_FAIL send, [session = {}]", sessionId);
+void LoginContext::loginFailAction(LoginFailAction& ac) {
     if (not m_txRouter) {
         LOG_FATAL("TxRouter is nullptr");
     }
 
-    auto pkt = std::make_unique<ActionPacket>(sessionId, Opcode::LOGIN_RES_FAIL);
+    const uint64_t sessionId = ac.sessionId();
 
-    m_txRouter->handlePacket(std::move(pkt));
+    auto payload = ac.takePayload();
+
+    m_txRouter->handlePacket(sessionId, std::move(payload));
 }
 
 void LoginContext::setTxRouter(TxRouter *txRouter) {

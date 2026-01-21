@@ -12,12 +12,9 @@ TxRouter::TxRouter(TlsServer *tls, TcpServer *tcp, UdpServer *udp, SessionManage
           m_sessionManager(sessionManager) {
 }
 
-void TxRouter::handlePacket(std::unique_ptr <ActionPacket> actionPacket) {
-    if (not actionPacket) {
-        return;
-    }
 
-    const uint64_t sessionId = actionPacket->getSessionId();
+/* param: std::vector<uint8_t> */
+void TxRouter::handlePacket(uint64_t sessionId, std::vector<uint8_t> payload) {
 
     Session *session = m_sessionManager->find(sessionId);
     if (not session) {
@@ -25,7 +22,7 @@ void TxRouter::handlePacket(std::unique_ptr <ActionPacket> actionPacket) {
         return;
     }
 
-    std::unique_ptr <Packet> packet = m_packetBuilder.build(std::move(actionPacket), *session);
+    std::unique_ptr <Packet> packet = m_packetBuilder.build(std::move(payload), *session);
     if (not packet) {
         return;
     }

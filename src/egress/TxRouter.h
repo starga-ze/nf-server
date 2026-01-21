@@ -18,7 +18,7 @@ class TxRouter {
 public:
     TxRouter(TlsServer *tls, TcpServer *tcp, UdpServer *udp, SessionManager *sessionManager);
 
-    void handlePacket(std::unique_ptr <ActionPacket> pkt);
+    void handlePacket(uint64_t sessionId, std::vector<uint8_t> payload);
 
 private:
     PacketBuilder m_packetBuilder;
