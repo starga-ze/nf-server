@@ -5,7 +5,6 @@
 
 std::unique_ptr <Event> EventFactory::create(ParsedPacket &parsed) {
 
-    /* TODO: implement deserialize */
     switch (parsed.opcode()) {
         case Opcode::LOGIN_REQ:
             return LoginParser::deserialize(parsed);

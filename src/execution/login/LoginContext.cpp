@@ -19,7 +19,7 @@ LoginContext::LoginContext(int shardIdx, ShardManager *shardManager, DbManager *
     m_shardIdx = shardIdx;
 }
 
-void LoginContext::loginReqEvent(const LoginEvent& ev) {
+void LoginContext::loginReqEvent(const LoginReqEvent& ev) {
     const uint64_t sessionId = ev.sessionId();
     const std::string_view id = ev.id();
     const std::string_view pw = ev.pw();

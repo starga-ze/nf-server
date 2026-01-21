@@ -56,7 +56,7 @@ void ShardWorker::processPacket() {
 
         // ---- event handling ----
         if (event) {
-            LOG_DEBUG("[idx:{}] handle event", m_shardIdx);
+            LOG_DEBUG("Shard idx:{}, handle event", m_shardIdx);
             event->handleEvent(*m_shardContext);
         }
 
@@ -69,7 +69,7 @@ void ShardWorker::processPacket() {
             }
 
             while (not snapshot.empty()) {
-                LOG_DEBUG("[idx:{}] handle action", m_shardIdx);
+                LOG_DEBUG("Shard idx:{}, handle action", m_shardIdx);
                 snapshot.front()->handleAction(*m_shardContext);
                 snapshot.pop();
             }
@@ -84,7 +84,7 @@ void ShardWorker::processPacket() {
             m_nextTick += m_tickInterval;
 
             if (now > m_nextTick + m_tickInterval) {
-                LOG_WARN("[Idx:{}] tick drift detected, resync", m_shardIdx);
+                LOG_WARN("Shard idx:{}, tick drift detected, resync", m_shardIdx);
                 m_nextTick = now + m_tickInterval;
             }
         }

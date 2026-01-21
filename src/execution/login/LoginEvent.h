@@ -6,9 +6,16 @@
 #include <string_view>
 #include <vector>
 
-class LoginEvent final : public Event {
+class LoginEvent : public Event 
+{
+protected:
+    LoginEvent(uint64_t sessionId);
+};
+
+class LoginReqEvent final : public LoginEvent 
+{
 public:
-    LoginEvent(
+    LoginReqEvent(
         uint64_t sessionId,
         std::vector<uint8_t> payload,
         std::string_view id,
@@ -22,8 +29,8 @@ public:
     
 
 private:
-    std::vector<uint8_t> m_payload;   // owning
-    std::string_view    m_id;     // view into m_body
+    std::vector<uint8_t> m_payload;
+    std::string_view    m_id;
     std::string_view    m_pw;
 };
 

@@ -68,10 +68,5 @@ std::unique_ptr<Event> LoginParser::parseLoginReq(ParsedPacket& parsed)
 
     std::string_view pw(reinterpret_cast<const char*>(buf + offset), pwLen);
 
-    return std::make_unique<LoginEvent>(
-        parsed.getSessionId(),
-        std::move(payload),
-        id,
-        pw
-    );
+    return std::make_unique<LoginReqEvent>(parsed.getSessionId(), std::move(payload), id, pw);
 }
