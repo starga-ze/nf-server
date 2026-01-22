@@ -1,47 +1,59 @@
 #pragma once
 
 /*
- *         Common Packet Structure
- * ┌──────────────────────────────────────┐
- * │ CommonPacketHeader (8 bytes)         │
- * │ ┌────────┬────────────┬────────────┐ │
- * │ │ ver(1) │ protoid(1) │ bodyLen(2) │ │
- * │ └────────┴────────┴────────────────┘ │
- * │  flags / reserved (4)                │
- * ├──────────────────────────────────────┤
- * │ Body (N bytes = bodyLen)             │
- * │ ┌────────────────────────────────┐   │
- * │ │ protocol-specific payload (28) │   │
- * │ └────────────────────────────────┘   │
- * └──────────────────────────────────────┘
+ *       Common Packet Structure (v2)
+ *
+ * ┌─────────────────────────────────────┐
+ * │    CommonPacketHeader (16 bytes)    │
+ * │ ┌────────┬───────────┬────────────┐ │
+ * │ │ ver(1) │ opcode(1) │ bodyLen(2) │ │
+ * │ └────────┴───────────┴────────────┘ │
+ * │            sessionId (8)            │
+ * │      flags / reserved (4 bytes)     │
+ * ├─────────────────────────────────────┤
+ * │      Body (N bytes = bodyLen)       │
+ * └─────────────────────────────────────┘
  */
 
 /*
- *            LOGIN REQ BODY
+ *          LOGIN REQ BODY (0x10)
  *
- *  Login request packet body layout.
- *  Strings are encoded as:
- *  [uint16 length] + [raw bytes (no null-termination)]
+ *  SessionId MUST be 0 for LOGIN_REQ
  *
- * ┌──────────────────────────────────────────┐
- * │ idLen   (uint16)                         │  2 bytes
- * ├──────────────────────────────────────────┤
- * │ idBytes (char[idLen])                    │  idLen bytes (UTF-8)
- * ├──────────────────────────────────────────┤
- * │ pwLen   (uint16)                         │  2 bytes
- * ├──────────────────────────────────────────┤
- * │ pwBytes (char[pwLen])                    │  pwLen bytes (UTF-8)
- * └──────────────────────────────────────────┘
- *
- *  Example:
- *    id = "test" (4 bytes)
- *    pw = "test" (4 bytes)
- *
- *    Body (hex):
- *      04 00 74 65 73 74  04 00 74 65 73 74
- *
- *    bodyLen = 12 bytes
+ * ┌─────────────────────────────────────┐
+ * │ idLen   (uint16)                    │
+ * ├─────────────────────────────────────┤
+ * │ idBytes (char[idLen])               │
+ * ├─────────────────────────────────────┤
+ * │ pwLen   (uint16)                    │
+ * ├─────────────────────────────────────┤
+ * │ pwBytes (char[pwLen])               │
+ * └─────────────────────────────────────┘
  */
+
+/*
+ *      LOGIN RES SUCCESS BODY (0x11)
+ *
+ *  SessionId is delivered via CommonPacketHeader.
+ *  Client must send including the sessionId
+ *
+ * ┌─────────────────────────────────────┐
+ * │ resultCode (uint8) = 1              │
+ * ├─────────────────────────────────────┤
+ * │ optional fields (future)            │
+ * └─────────────────────────────────────┘
+ */
+
+/*
+ *        LOGIN RES FAIL BODY (0x12)
+ *
+ * ┌─────────────────────────────────────┐
+ * │ resultCode (uint8) = 0              │
+ * ├─────────────────────────────────────┤
+ * │ errorCode (uint16)                  │
+ * └─────────────────────────────────────┘
+ */
+
 
 #include "net/packet/Packet.h"
 
@@ -57,7 +69,6 @@ enum class Opcode : uint8_t {
     LOGOUT_REQ = 0x15,
     LOGOUT_RES_SUCCESS = 0x16,
     LOGOUT_RES_FAIL = 0x17,
-
 
     MOVE = 0x20,   // 32
 

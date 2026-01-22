@@ -34,24 +34,7 @@ void RxRouter::handlePacket(std::unique_ptr <Packet> packet) {
         session = m_sessionManager->create(sessionId);
     }
 
-    switch (parsed.getConnInfo().protocol) {
-        case Protocol::TCP:
-        case Protocol::TLS:
-            session->bindTcp(parsed.getConnInfo(), parsed.getFd());
-            break;
-
-            /*
-            case Protocol::UDP:
-                session->bindUdp(
-                    parsed.getServerFd(),
-                    parsed.getSrcAddr(),
-                    parsed.getSrcAddrLen()
-                );
-                break;
-            */
-        default:
-            break;
-    }
+    session->bind(parsed.getConnInfo(), parsed.getFd());
 
     size_t shardIdx = selectShard(sessionId);
 

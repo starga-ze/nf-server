@@ -24,7 +24,7 @@ void Session::setState(SessionState state) {
     m_state = state;
 }
 
-void Session::bindTcp(const ConnInfo &connInfo, int fd) {
+void Session::bind(const ConnInfo &connInfo, int fd) {
     m_fd = fd;
     m_connInfo = connInfo;
     m_srcIp = connInfo.srcIp;

@@ -31,7 +31,7 @@ public:
 
     void setState(SessionState state);
 
-    void bindTcp(const ConnInfo &connInfo, int fd);
+    void bind(const ConnInfo &connInfo, int fd);
 
     const ConnInfo &getConnInfo() const;
 

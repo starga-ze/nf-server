@@ -14,8 +14,7 @@ sockaddr_in PacketBuilder::createSockAddr(uint32_t ip, uint16_t port) {
     return addr;
 }
 
-std::unique_ptr <Packet> PacketBuilder::build(const std::vector<uint8_t> payload,
-                                                      const Session &session) {
+std::unique_ptr <Packet> PacketBuilder::build(std::vector<uint8_t> payload, const Session &session) {
     const Protocol protocol = session.getProtocol();
 
     switch (protocol) {

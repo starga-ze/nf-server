@@ -70,5 +70,5 @@ std::unique_ptr<Action> LoginBuilder::buildLoginResFail(Opcode opcode, uint64_t 
     // body
     payload[8] = 0x01;
 
-    return std::make_unique<LoginSuccessAction>(sessionId, std::move(payload));
+    return std::make_unique<LoginFailAction>(sessionId, std::move(payload));
 }
