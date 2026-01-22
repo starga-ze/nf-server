@@ -110,7 +110,7 @@ void SessionManager::dump()
     constexpr int STATE_W = 10;
     constexpr int FD_W    = 8;
 
-    oss << "\n[SESSION]\n";
+    oss << "[SESSION]\n";
     oss << std::left
         << std::setw(SID_W)   << "SID"
         << std::setw(STATE_W) << "STATE"
@@ -122,29 +122,29 @@ void SessionManager::dump()
 
     if (m_sessions.empty()) {
         oss << "(no sessions)\n";
-        LOG_INFO("{}", oss.str());
-        return;
     }
 
-    for (const auto& [sid, session] : m_sessions) {
-        oss << std::left
-            << std::setw(SID_W)   << sid
-            << std::setw(STATE_W) << stateToStr(session->getState())
-            << std::setw(FD_W)    << session->getTcpFd()
-            << std::setw(FD_W)    << session->getUdpFd()
-            << "\n";
+    else {
+        for (const auto& [sid, session] : m_sessions) {
+            oss << std::left
+                << std::setw(SID_W)   << sid
+                << std::setw(STATE_W) << stateToStr(session->getState())
+                << std::setw(FD_W)    << session->getTcpFd()
+                << std::setw(FD_W)    << session->getUdpFd()
+                << "\n";
+        }
     }
 
-    LOG_TRACE("{}", oss.str());
+    LOG_TRACE("Session Table Dump\n{}", oss.str());
 }
 
 const char* SessionManager::stateToStr(SessionState s) {
     switch (s) {
-    case SessionState::PRE_AUTH: return "PRE";
+    case SessionState::PRE_AUTH: return "PRE_AUTH";
     case SessionState::AUTH:     return "AUTH";
     case SessionState::IN_WORLD: return "WORLD";
     case SessionState::CLOSED:   return "CLOSE";
-    default:                     return "UNK";
+    default:                     return "UNKNOWN";
     }
 }
 

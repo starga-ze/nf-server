@@ -28,7 +28,7 @@ void TxRouter::handlePacket(uint64_t sessionId, Opcode opcode, std::vector<uint8
         return;
     }
 
-    std::unique_ptr <Packet> packet = m_packetBuilder.build(std::move(payload), snap);
+    std::unique_ptr<Packet> packet = m_packetBuilder.build(std::move(payload), snap);
     if (not packet) {
         return;
     }

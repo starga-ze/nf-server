@@ -3,6 +3,7 @@
 
 #include <cstring>
 #include <arpa/inet.h>
+#include <endian.h>
 
 static const uint64_t FNV_OFFSET_BASIS = 1469598103934665603ULL;
 static const uint64_t FNV_PRIME = 1099511628211ULL;
@@ -46,9 +47,10 @@ std::optional <ParsedPacket> PacketParser::parse(std::unique_ptr <Packet> packet
 
     uint64_t sessionId;
     std::memcpy(&sessionId, p + 4, sizeof(uint64_t));
+    sessionId = be64toh(sessionId);
 
     uint32_t flags;
-    std::memcpy(&flags, p + 4, sizeof(uint32_t));
+    std::memcpy(&flags, p + 12, sizeof(uint32_t));
     flags = ntohl(flags);
 
     if (payload.size() < HEADER_SIZE + bodyLen) {

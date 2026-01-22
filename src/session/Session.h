@@ -8,7 +8,8 @@ enum class SessionState : uint8_t {
     PRE_AUTH,
     AUTH,
     IN_WORLD,
-    CLOSED
+    CLOSED,
+    UNKNOWN
 };
 
 class Session {
@@ -45,7 +46,7 @@ public:
 private:
     uint64_t m_sessionId{0};
 
-    SessionState m_state{SessionState::PRE_AUTH};
+    SessionState m_state{SessionState::UNKNOWN};
 
     // network
     int m_tcpFd{-1};        // TCP / TLS 공용
