@@ -14,15 +14,21 @@ TxRouter::TxRouter(TlsServer *tls, TcpServer *tcp, UdpServer *udp, SessionManage
 
 
 /* param: std::vector<uint8_t> */
-void TxRouter::handlePacket(uint64_t sessionId, std::vector<uint8_t> payload) {
+void TxRouter::handlePacket(uint64_t sessionId, Opcode opcode, std::vector<uint8_t> payload) {
 
-    Session *session = m_sessionManager->find(sessionId);
-    if (not session) {
-        LOG_WARN("Session not found, sessionId={}", sessionId);
+    LOG_TRACE("sessid:{}, opcode:{}", sessionId, static_cast<uint8_t> (opcode));
+
+    if (opcode == Opcode::LOGIN_RES_SUCCESS) {
+        m_sessionManager->setState(sessionId, SessionState::AUTH);
+    }
+
+    SessionTxSnapshot snap;
+    if (not m_sessionManager->getTxSnapshot(sessionId, opcode, snap)) {
+        LOG_WARN("Tx snapshot failed, sid={}", sessionId);
         return;
     }
 
-    std::unique_ptr <Packet> packet = m_packetBuilder.build(std::move(payload), *session);
+    std::unique_ptr <Packet> packet = m_packetBuilder.build(std::move(payload), snap);
     if (not packet) {
         return;
     }

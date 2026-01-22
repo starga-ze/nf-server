@@ -62,12 +62,13 @@ void LoginContext::loginSuccessAction(LoginSuccessAction& ac) {
     }
 
     const uint64_t sessionId = ac.sessionId();
+    Opcode opcode = ac.opcode();
 
     LOG_DEBUG("LOGIN_SUCCESS send, [session={}]", sessionId);
 
     auto payload = ac.takePayload();
 
-    m_txRouter->handlePacket(sessionId, std::move(payload));
+    m_txRouter->handlePacket(sessionId, opcode, std::move(payload));
 }
 
 void LoginContext::loginFailAction(LoginFailAction& ac) {
@@ -76,12 +77,13 @@ void LoginContext::loginFailAction(LoginFailAction& ac) {
     }
 
     const uint64_t sessionId = ac.sessionId();
+    Opcode opcode = ac.opcode();
 
     LOG_DEBUG("LOGIN_FAIL send, [session={}]", sessionId);
 
     auto payload = ac.takePayload();
 
-    m_txRouter->handlePacket(sessionId, std::move(payload));
+    m_txRouter->handlePacket(sessionId, opcode, std::move(payload));
 }
 
 void LoginContext::setTxRouter(TxRouter *txRouter) {

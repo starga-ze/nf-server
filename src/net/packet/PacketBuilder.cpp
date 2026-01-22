@@ -1,10 +1,9 @@
 #include "PacketBuilder.h"
 #include "net/packet/Packet.h"
-#include "session/Session.h"
+#include "session/SessionManager.h"
 #include "util/Logger.h"
 
 #include <cstring>
-
 
 sockaddr_in PacketBuilder::createSockAddr(uint32_t ip, uint16_t port) {
     sockaddr_in addr{};
@@ -14,41 +13,39 @@ sockaddr_in PacketBuilder::createSockAddr(uint32_t ip, uint16_t port) {
     return addr;
 }
 
-std::unique_ptr <Packet> PacketBuilder::build(std::vector<uint8_t> payload, const Session &session) {
-    const Protocol protocol = session.getProtocol();
+std::unique_ptr <Packet> PacketBuilder::build(std::vector<uint8_t> payload, const SessionTxSnapshot& snap) {
+    const ConnInfo& ci = snap.connInfo;
 
-    switch (protocol) {
-        case Protocol::TCP:
-        case Protocol::TLS: {
-            const ConnInfo &connInfo = session.getConnInfo();
+    // 논리적 src / dst addr 구성 (TCP/TLS/UDP 공통)
+    sockaddr_in srcAddr = createSockAddr(ci.srcIp, ci.srcPort);
+    sockaddr_in dstAddr = createSockAddr(ci.dstIp, ci.dstPort);
 
-            sockaddr_in srcAddr = createSockAddr(connInfo.dstIp, connInfo.dstPort);
-            sockaddr_in dstAddr = createSockAddr(connInfo.srcIp, connInfo.srcPort);
+    switch (snap.protocol) {
 
-            return std::make_unique<Packet>(
-                    session.getFd(),
-                    protocol,
-                    std::move(payload),
-                    srcAddr,
-                    dstAddr
-            );
-        }
-            /*
-            case Protocol::UDP:
-            {
-                return std::make_unique<Packet>(
-                    session.getFd(),
-                    session.getProtocol(),
-                    std::move(payload),
-                    session.getDstAddr(),
-                    session.getDstLen()
-                );
-            }
-            */
-        default:
-            LOG_WARN("PacketBuilder: unsupported protocol");
-            return nullptr;
+    case Protocol::TCP:
+    case Protocol::TLS:
+        return std::make_unique<Packet>(
+            snap.tcpFd,
+            snap.protocol,
+            std::move(payload),
+            srcAddr,
+            dstAddr
+        );
+
+    case Protocol::UDP:
+        return std::make_unique<Packet>(
+            snap.udpFd,
+            Protocol::UDP,
+            std::move(payload),
+            srcAddr,   // ★ 논리 정보로 유지
+            dstAddr
+        );
+
+    default:
+        LOG_WARN("PacketBuilder: unsupported protocol");
+        return nullptr;
     }
+
 }
 
 

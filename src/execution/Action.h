@@ -1,5 +1,7 @@
 #pragma once
 
+#include "net/packet/ParsedPacketTypes.h"
+
 class ShardContext;
 
 class Action {

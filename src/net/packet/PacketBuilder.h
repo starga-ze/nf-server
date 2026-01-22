@@ -6,7 +6,7 @@
 
 class ActionPacket;
 
-class Session;
+struct SessionTxSnapshot;
 
 class Packet;
 
@@ -16,7 +16,7 @@ public:
 
     ~PacketBuilder() = default;
 
-    std::unique_ptr <Packet> build(std::vector<uint8_t> payload, const Session &session);
+    std::unique_ptr <Packet> build(std::vector<uint8_t> payload, const SessionTxSnapshot& snap);
 
 private:
     static sockaddr_in createSockAddr(uint32_t ip, uint16_t port);

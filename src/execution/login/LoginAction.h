@@ -15,7 +15,7 @@ public:
 
 class LoginSuccessAction final : public LoginAction {
 public:
-    LoginSuccessAction(uint64_t sessionId, std::vector<uint8_t> payload);
+    LoginSuccessAction(uint64_t sessionId, Opcode opcode, std::vector<uint8_t> payload);
 
     void handleAction(ShardContext &shardContext) override;
 
@@ -23,7 +23,10 @@ public:
 
     uint64_t sessionId() const { return m_sessionId; }
 
+    Opcode opcode() const { return m_opcode; }
+
 private:
+    Opcode m_opcode;
     uint64_t m_sessionId;
     std::vector<uint8_t> m_payload;
 };
@@ -31,7 +34,7 @@ private:
 
 class LoginFailAction final : public LoginAction {
 public:
-    LoginFailAction(uint64_t sessionId, std::vector<uint8_t> payload);
+    LoginFailAction(uint64_t sessionId, Opcode opcode, std::vector<uint8_t> payload);
 
     void handleAction(ShardContext &shardContext) override;
 
@@ -39,7 +42,10 @@ public:
 
     uint64_t sessionId() const { return m_sessionId; }
 
+    Opcode opcode() const { return m_opcode; }
+
 private:
+    Opcode m_opcode;
     uint64_t m_sessionId;
     std::vector<uint8_t> m_payload;
 };

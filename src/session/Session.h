@@ -1,14 +1,8 @@
+// Session.h
 #pragma once
 
-#include "net/packet/Packet.h"
-#include "net/packet/ParsedPacketTypes.h"
-
-#include <cstddef>
+#include "net/packet/ParsedPacket.h" // Protocol, ConnInfo
 #include <cstdint>
-
-struct SessionId {
-    uint64_t sessionId{0};
-};
 
 enum class SessionState : uint8_t {
     PRE_AUTH,
@@ -19,33 +13,43 @@ enum class SessionState : uint8_t {
 
 class Session {
 public:
-    Session(uint64_t sessionId);
+    explicit Session(uint64_t sid)
+        : m_sessionId(sid) {}
 
-    SessionId getSessionId() const;
+    void bind(const ParsedPacket& parsed) {
+        m_connInfo = parsed.getConnInfo();
 
-    int getFd() const;
+        switch (m_connInfo.protocol) {
+        case Protocol::TCP:
+        case Protocol::TLS:
+            m_tcpFd = parsed.getFd();
+            break;
 
-    Protocol getProtocol() const;
+        case Protocol::UDP:
+            m_udpFd = parsed.getFd(); // server fd
+            break;
 
-    SessionState getState() const;
+        default:
+            break;
+        }
+    }
 
-    void setState(SessionState state);
+    // getters (TxRouter용 – 필요 시)
+    int getTcpFd() const { return m_tcpFd; }
+    int getUdpFd() const { return m_udpFd; }
+    const ConnInfo& getConnInfo() const { return m_connInfo; }
 
-    void bind(const ConnInfo &connInfo, int fd);
-
-    const ConnInfo &getConnInfo() const;
+    SessionState getState() const { return m_state; }
+    void setState(SessionState s) { m_state = s; }
 
 private:
-    SessionId m_sessionId;
+    uint64_t m_sessionId{0};
 
-    SessionState m_state{SessionState::CLOSED};
+    SessionState m_state{SessionState::PRE_AUTH};
 
-    ConnInfo m_connInfo;
-
-    /* May need atomic -> TODO */
-    uint32_t m_dstIp;
-    uint32_t m_srcIp;
-    Protocol m_protocol{Protocol::UNKNOWN};
-    int m_fd{-1};
+    // network
+    int m_tcpFd{-1};        // TCP / TLS 공용
+    int m_udpFd{-1};        // UDP server fd
+    ConnInfo m_connInfo{};  // src/dst ip/port (UDP peer 포함)
 };
-
+ 

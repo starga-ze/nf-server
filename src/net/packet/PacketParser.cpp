@@ -58,9 +58,8 @@ std::optional <ParsedPacket> PacketParser::parse(std::unique_ptr <Packet> packet
 
     if (opcode == Opcode::LOGIN_REQ) {
         if (sessionId == 0) {
-            LOG_DEBUG("Allocate Pre-session ID");
             return ParsedPacket(packet->getFd(), packet->getConnInfo(), version, opcode,
-                    flags, resolveSessionId(*packet), std::move(payload), HEADER_SIZE, bodyLen);
+                    flags, resolvePreSessionId(*packet), std::move(payload), HEADER_SIZE, bodyLen);
         }
 
         else {
@@ -84,7 +83,7 @@ uint64_t PacketParser::fnv1aMix(uint64_t hash, uint64_t value) const {
     return hash;
 }
 
-uint64_t PacketParser::resolveSessionId(const Packet &packet) const {
+uint64_t PacketParser::resolvePreSessionId(const Packet &packet) const {
     uint64_t hash = FNV_OFFSET_BASIS;
 
     hash = fnv1aMix(hash, static_cast<uint64_t>(packet.getProtocol()));

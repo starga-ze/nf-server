@@ -55,9 +55,9 @@ bool Core::initializeRuntime() {
 
     m_shardWorkerThread = 4;
 
-    m_tcpClients = 1;
-    m_udpClients = 1;
-    m_tlsClients = 1;
+    m_tcpClients = 0;
+    m_udpClients = 0;
+    m_tlsClients = 6;
 
     m_tcpServerWorkerThread = 3;
     m_udpServerWorkerThread = 3;
@@ -164,6 +164,10 @@ void Core::startThreads() {
     m_threadManager->addThread("shard_manager",
                                std::bind(&ShardManager::start, m_shardManager.get()),
                                std::bind(&ShardManager::stop, m_shardManager.get()));
+
+    m_threadManager->addThread("session_manager",
+                               std::bind(&SessionManager::start, m_sessionManager.get()),
+                               std::bind(&SessionManager::stop, m_sessionManager.get()));
 
     for (int i = 0; i < m_udpClients; ++i) {
         auto &udpClient = m_udpClientList[i];

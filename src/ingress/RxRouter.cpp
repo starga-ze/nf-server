@@ -25,16 +25,12 @@ void RxRouter::handlePacket(std::unique_ptr <Packet> packet) {
 
     ParsedPacket &parsed = *parsedPacket;
 
-    const uint64_t sessionId = parsed.getSessionId();
-
-    LOG_TRACE("SessionId : {}", sessionId);
-
-    Session *session = m_sessionManager->find(sessionId);
-    if (not session) {
-        session = m_sessionManager->create(sessionId);
+    if (not m_sessionManager->checkAndBind(parsed)){
+        LOG_ERROR("Session Bind Error");
+        return;
     }
 
-    session->bind(parsed.getConnInfo(), parsed.getFd());
+    uint64_t sessionId = parsed.getSessionId();
 
     size_t shardIdx = selectShard(sessionId);
 
