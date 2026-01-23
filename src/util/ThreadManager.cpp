@@ -6,7 +6,9 @@
 #include <unistd.h>
 
 ThreadManager::~ThreadManager() {
+    stopAll();
 }
+
 
 bool ThreadManager::setName(const std::string &name) {
     char thread_name[16];

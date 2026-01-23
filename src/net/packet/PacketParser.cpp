@@ -6,7 +6,7 @@
 #include <endian.h>
 
 /*
- * Note that /src/net/packet/ParsedPacketTypes.h
+ * note that /src/net/packet/ParsedPacketTypes.h
  *
  * CommonPacketHeader (16 bytes)
  * 
