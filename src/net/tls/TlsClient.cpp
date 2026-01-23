@@ -16,7 +16,7 @@ static const uint8_t LOGIN_REQ_TEST_PACKET[28]
                 0x00, 0x00, 0x00, 0x00, // flags
                 0x00, 0x04, 0x74, 0x65, // body
                 0x73, 0x74, 0x00, 0x04,
-                0x74, 0x65, 0x73, 0x74
+                0x74, 0x65, 0x73, 0x73
         };
 
 TlsClient::TlsClient(int id, int port)
@@ -98,12 +98,6 @@ void TlsClient::start() {
     LOG_INFO("TlsClient[{}]: TLS Handshake complete!", m_id);
 
     while (m_running) {
-        /*
-        Random random;
-        double sleepDuration = random.getRandomReal(10.0, 20.0);
-        std::this_thread::sleep_for(std::chrono::duration<double>(sleepDuration));
-        */
-
         int wr = SSL_write(m_ssl, LOGIN_REQ_TEST_PACKET, sizeof(LOGIN_REQ_TEST_PACKET));
         if (wr <= 0) {
             int err = SSL_get_error(m_ssl, wr);
@@ -111,9 +105,11 @@ void TlsClient::start() {
             break;
         }
  
+        /*
         Random random;
-        double sleepDuration = random.getRandomReal(1.0, 2.0);
+        double sleepDuration = random.getRandomReal(5.0, 10.0);
         std::this_thread::sleep_for(std::chrono::duration<double>(sleepDuration));
+        */
         
     }
 

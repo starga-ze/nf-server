@@ -12,7 +12,7 @@ void SessionManager::start() {
 
     while(m_running.load(std::memory_order_acquire)) {
         dump();
-        std::this_thread::sleep_for(std::chrono::seconds(3));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 }
 
@@ -35,7 +35,7 @@ bool SessionManager::checkAndBind(const ParsedPacket& parsed)
     auto it = m_sessions.find(sessionId);
 
     if (it == m_sessions.end()) {
-        LOG_WARN("Session not found,  sid={}", sessionId);
+        LOG_WARN("Session not found, sid={}", sessionId);
         return false;
     }
 

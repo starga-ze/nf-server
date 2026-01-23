@@ -16,14 +16,17 @@ void TxRouter::handlePacket(uint64_t sessionId, Opcode opcode, std::vector<uint8
 
     LOG_TRACE("sessid:{}, opcode:{}", sessionId, static_cast<uint8_t> (opcode));
 
-    if (opcode == Opcode::LOGIN_RES_SUCCESS) {
-        m_sessionManager->setState(sessionId, SessionState::AUTH);
-    }
-
     SessionTxSnapshot snap;
     if (not m_sessionManager->getTxSnapshot(sessionId, opcode, snap)) {
         LOG_WARN("Tx snapshot failed, sid={}", sessionId);
         return;
+    }
+
+    if (opcode == Opcode::LOGIN_RES_SUCCESS) {
+        m_sessionManager->setState(sessionId, SessionState::AUTH);
+    }
+    else if (opcode == Opcode::LOGIN_RES_FAIL) {
+        m_sessionManager->erase(sessionId);
     }
 
     std::unique_ptr<Packet> packet = m_packetBuilder.build(std::move(payload), snap);
