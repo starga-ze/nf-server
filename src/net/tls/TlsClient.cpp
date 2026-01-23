@@ -105,12 +105,9 @@ void TlsClient::start() {
             break;
         }
  
-        /*
         Random random;
         double sleepDuration = random.getRandomReal(5.0, 10.0);
         std::this_thread::sleep_for(std::chrono::duration<double>(sleepDuration));
-        */
-        
     }
 
     stop();

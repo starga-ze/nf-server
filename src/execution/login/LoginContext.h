@@ -12,6 +12,8 @@
 
 class ShardManager;
 class LoginReqEvent;
+class LoginFailAction;
+class LoginSuccessAction;
 
 class LoginContext {
 public:

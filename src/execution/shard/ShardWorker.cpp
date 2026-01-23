@@ -2,19 +2,12 @@
 #include "ShardManager.h"
 #include "util/Logger.h"
 
+#include "execution/world/WorldContext.h"
+
 ShardWorker::ShardWorker(size_t shardIdx, ShardManager *shardManager, DbManager *dbManager)
-        : m_shardIdx(shardIdx) {
+        : m_shardIdx(shardIdx) 
+{
     m_shardContext = std::make_unique<ShardContext>(m_shardIdx, shardManager, dbManager);
-
-    /*
-    m_loginContext = std::make_unique<LoginContext>();
-
-    m_loginContext->setShardWorker(this);
-    if (dbManager)
-    {
-        m_loginContext->setDbManager(dbManager);
-    }
-    */
 }
 
 void ShardWorker::processPacket() {
@@ -45,13 +38,7 @@ void ShardWorker::processPacket() {
 
         {
             auto msToNextTick = std::chrono::duration_cast<std::chrono::milliseconds>(
-                    (m_nextTick > now) ? (m_nextTick - now) : std::chrono::milliseconds(0)
-            ).count();
-            /*
-            LOG_TRACE("[Idx:{}] wake (event={}, nextTickIn={}ms)", m_shardIdx, 
-                    pkt ? "yes" : "no", msToNextTick);
-                    */
-
+                    (m_nextTick > now) ? (m_nextTick - now) : std::chrono::milliseconds(0)).count();
         }
 
         // ---- event handling ----
@@ -92,12 +79,12 @@ void ShardWorker::processPacket() {
 }
 
 void ShardWorker::onTick() {
-    /*
-     * TODO
-     *  - WorldContext::tick()
-     *  - Action flush
-     *  - Snapshot/batch send
-     */
+    static uint64_t tickCount = 0;
+    ++tickCount;
+
+    LOG_INFO("shard: {}, tick: {}", m_shardIdx, tickCount);
+    m_shardContext->worldContext().tick(
+            std::chrono::duration_cast<std::chrono::milliseconds>(m_tickInterval).count());
 }
 
 void ShardWorker::stop() {
