@@ -12,8 +12,6 @@ WorldContext::~WorldContext() {
 }
 
 void WorldContext::init() {
-    LOG_INFO("WorldContext init (shard={})", m_shardIdx);
-
     for (uint32_t ch = 1; ch <= CHANNEL_COUNT; ++ch) {
         auto channel = std::make_unique<Channel>(ch);
 
@@ -26,8 +24,10 @@ void WorldContext::init() {
 }
 
 void WorldContext::tick(uint64_t deltaMs) {
+    float dtSec = deltaMs * 0.001f;
+
     for (auto& [_, channel] : m_channels) {
-        channel->tick(deltaMs);
+        channel->tick(dtSec);
     }
 }
 

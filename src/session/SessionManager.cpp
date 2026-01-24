@@ -12,7 +12,7 @@ void SessionManager::start() {
 
     while(m_running.load(std::memory_order_acquire)) {
         dump();
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(3));
     }
 }
 

@@ -13,9 +13,6 @@ TxRouter::TxRouter(TlsServer *tls, TcpServer *tcp, UdpServer *udp, SessionManage
 }
 
 void TxRouter::handlePacket(uint64_t sessionId, Opcode opcode, std::vector<uint8_t> payload) {
-
-    LOG_TRACE("sessid:{}, opcode:{}", sessionId, static_cast<uint8_t> (opcode));
-
     SessionTxSnapshot snap;
     if (not m_sessionManager->getTxSnapshot(sessionId, opcode, snap)) {
         LOG_WARN("Tx snapshot failed, sid={}", sessionId);

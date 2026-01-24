@@ -57,7 +57,7 @@ bool Core::initializeRuntime() {
 
     m_tcpClients = 0;
     m_udpClients = 0;
-    m_tlsClients = 5;
+    m_tlsClients = 1;
 
     m_tcpServerWorkerThread = 3;
     m_udpServerWorkerThread = 3;

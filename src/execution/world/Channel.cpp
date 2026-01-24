@@ -27,9 +27,9 @@ Map *Channel::getMap(uint32_t mapId) {
     return it->second.get();
 }
 
-void Channel::tick(float dt) {
+void Channel::tick(float dtSec) {
     for (auto &[_, map]: m_maps) {
-        map->tick(dt);
+        map->tick(dtSec);
     }
 }
 

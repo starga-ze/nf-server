@@ -12,12 +12,14 @@ ShardWorker::ShardWorker(size_t shardIdx, ShardManager *shardManager, DbManager 
 
 void ShardWorker::processPacket() {
     m_running.store(true, std::memory_order_release);
-    m_nextTick = std::chrono::steady_clock::now() + m_tickInterval;
+
+    auto now = std::chrono::steady_clock::now();
+    m_startTime     = now;
+    m_lastTickTime  = now;
+    m_nextTick      = std::chrono::steady_clock::now() + m_tickInterval;
 
     while (m_running.load(std::memory_order_acquire)) {
         std::unique_ptr <Event> event;
-
-        auto beforeWait = std::chrono::steady_clock::now();
 
         {
             std::unique_lock <std::mutex> lock(m_eventLock);
@@ -34,15 +36,11 @@ void ShardWorker::processPacket() {
             }
         }
 
-        auto now = std::chrono::steady_clock::now();
-
-        {
-            auto msToNextTick = std::chrono::duration_cast<std::chrono::milliseconds>(
-                    (m_nextTick > now) ? (m_nextTick - now) : std::chrono::milliseconds(0)).count();
-        }
+        now = std::chrono::steady_clock::now();
 
         // ---- event handling ----
-        if (event) {
+        if (event) 
+        {
             LOG_DEBUG("Shard idx:{}, handle event", m_shardIdx);
             event->handleEvent(*m_shardContext);
         }
@@ -64,9 +62,7 @@ void ShardWorker::processPacket() {
 
         // ---- tick handling ----
         if (now >= m_nextTick) {
-            //LOG_TRACE("[Idx:{}] update tick", m_shardIdx);
-
-            onTick();
+            onTick(now);
 
             m_nextTick += m_tickInterval;
 
@@ -78,13 +74,16 @@ void ShardWorker::processPacket() {
     }
 }
 
-void ShardWorker::onTick() {
-    static uint64_t tickCount = 0;
-    ++tickCount;
+void ShardWorker::onTick(std::chrono::steady_clock::time_point now) {
+    const auto deltaMs = std::chrono::duration_cast<std::chrono::milliseconds>(now - m_lastTickTime).count();
+    const auto elapsedSinceStartMs = std::chrono::duration_cast<std::chrono::milliseconds>(now - m_startTime).count();
 
-    LOG_INFO("shard: {}, tick: {}", m_shardIdx, tickCount);
-    m_shardContext->worldContext().tick(
-            std::chrono::duration_cast<std::chrono::milliseconds>(m_tickInterval).count());
+    m_lastTickTime = now;
+    ++m_tickCount;
+
+    // LOG_TRACE("Shard idx:{}, TICK #{} | delta={}ms | elapsed={}ms", m_shardIdx, m_tickCount, deltaMs, elapsedSinceStartMs);
+
+    m_shardContext->worldContext().tick(deltaMs);
 }
 
 void ShardWorker::stop() {

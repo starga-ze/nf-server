@@ -31,11 +31,13 @@ public:
     ShardContext &shardContext() { return *m_shardContext; }
 
 private:
-    void onTick();
+    void onTick(std::chrono::steady_clock::time_point now);
 
     std::unique_ptr <ShardContext> m_shardContext;
 
     std::atomic<bool> m_running{false};
+
+    size_t m_shardIdx;
 
     /* event & action */
     std::queue <std::unique_ptr<Event>> m_eventQueue;
@@ -46,9 +48,11 @@ private:
 
     std::condition_variable m_cv;
 
-    std::chrono::milliseconds m_tickInterval{3000};
-    std::chrono::steady_clock::time_point m_nextTick;
+    std::chrono::milliseconds m_tickInterval{1000};
 
-    size_t m_shardIdx;
+    std::chrono::steady_clock::time_point m_startTime{};
+    std::chrono::steady_clock::time_point m_lastTickTime{};
+    std::chrono::steady_clock::time_point m_nextTick{};
+
+    uint64_t m_tickCount{0};
 };
-

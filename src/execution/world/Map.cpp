@@ -26,11 +26,8 @@ void Map::removePlayer(PlayerId playerId) {
     LOG_INFO("Map[{}]: player {} left", m_mapId, playerId);
 }
 
-void Map::tick(float /*dt*/) {
-    // TODO:
-    // - movement snapshot
-    // - AOI update
-    // - periodic broadcast
+void Map::tick(float dtSec) {
+
 }
 
 size_t Map::playerCount() const {

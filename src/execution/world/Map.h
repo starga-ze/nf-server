@@ -22,7 +22,7 @@ public:
 
     void removePlayer(PlayerId playerId);
 
-    void tick(float dt);
+    void tick(float dtSec);
 
     std::size_t playerCount() const;
 

@@ -16,7 +16,7 @@ public:
 
     Map *getMap(uint32_t mapId);
 
-    void tick(float dt);
+    void tick(float dtSec);
 
 private:
     uint32_t m_channelId;
