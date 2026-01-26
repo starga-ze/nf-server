@@ -44,6 +44,6 @@ private:
     std::atomic<bool> m_running {false};
 
     std::mutex m_lock;
-    std::unordered_map <int, uint64_t> m_fdToSessionId;
+    std::unordered_map <int, uint64_t> m_tlsFdToSessionId;
     std::unordered_map <uint64_t, std::unique_ptr<Session>> m_sessions;
 };

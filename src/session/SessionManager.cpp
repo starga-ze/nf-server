@@ -50,7 +50,7 @@ bool SessionManager::create(ParsedPacket& parsed)
     std::lock_guard<std::mutex> lock(m_lock);
 
     
-    if (m_fdToSessionId.count(fd) != 0) {
+    if (m_tlsFdToSessionId.count(fd) != 0) {
         LOG_WARN("Duplicate LOGIN_REQ, fd={}", fd);
         return false;
     }
@@ -62,7 +62,7 @@ bool SessionManager::create(ParsedPacket& parsed)
     session->setState(SessionState::PRE_AUTH);
 
     m_sessions.emplace(sessionId, std::move(session));
-    m_fdToSessionId.emplace(fd, sessionId);
+    m_tlsFdToSessionId.emplace(fd, sessionId);
 
     parsed.setSessionId(sessionId);
 
@@ -79,9 +79,9 @@ void SessionManager::erase(uint64_t sessionId)
         return;
     }
 
-    int fd = it->second->getTcpFd();
+    int fd = it->second->getTlsFd();
     
-    m_fdToSessionId.erase(fd);
+    m_tlsFdToSessionId.erase(fd);
     m_sessions.erase(sessionId);
 }
 

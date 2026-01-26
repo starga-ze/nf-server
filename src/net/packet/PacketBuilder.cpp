@@ -23,23 +23,13 @@ std::unique_ptr <Packet> PacketBuilder::build(std::vector<uint8_t> payload, cons
     switch (snap.protocol) {
 
     case Protocol::TCP:
+        return std::make_unique<Packet>(snap.tcpFd, snap.protocol, std::move(payload), srcAddr, dstAddr);
+
     case Protocol::TLS:
-        return std::make_unique<Packet>(
-            snap.tlsFd,
-            snap.protocol,
-            std::move(payload),
-            srcAddr,
-            dstAddr
-        );
+        return std::make_unique<Packet>(snap.tlsFd, snap.protocol, std::move(payload), srcAddr, dstAddr);
 
     case Protocol::UDP:
-        return std::make_unique<Packet>(
-            snap.udpFd,
-            Protocol::UDP,
-            std::move(payload),
-            srcAddr,
-            dstAddr
-        );
+        return std::make_unique<Packet>(snap.udpFd, snap.protocol, std::move(payload), srcAddr, dstAddr);
 
     default:
         LOG_WARN("PacketBuilder: unsupported protocol");
