@@ -43,13 +43,11 @@ void Client::start()
     }
 
     loginPhase();
-    lobbyPhase();
-
-    LOG_INFO("SessionId; {}", m_sessionId);
 
     m_running = true;
     while(m_running)
     {
+        lobbyPhase();
         std::this_thread::sleep_for(std::chrono::seconds(3));
     }
 }
