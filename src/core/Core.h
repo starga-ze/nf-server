@@ -3,13 +3,13 @@
 #include "util/ThreadManager.h"
 
 #include "db/DbManager.h"
-#include "execution/shard/ShardManager.h"
+#include "shard/ShardManager.h"
 #include "session/SessionManager.h"
 
-#include "net/udp/UdpServer.h"
-#include "net/tcp/TcpServer.h"
-#include "net/tls/TlsServer.h"
-#include "net/tls/TlsContext.h"
+#include "protocol/udp/UdpServer.h"
+#include "protocol/tcp/TcpServer.h"
+#include "protocol/tls/TlsServer.h"
+#include "protocol/tls/TlsContext.h"
 
 #include "ingress/RxRouter.h"
 #include "egress/TxRouter.h"

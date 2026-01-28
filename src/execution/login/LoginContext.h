@@ -1,7 +1,7 @@
 #pragma once
 
 #include "egress/TxRouter.h"
-#include "net/packet/ParsedPacket.h"
+#include "packet/ParsedPacket.h"
 #include "db/DbManager.h"
 #include "execution/login/LoginAction.h"
 #include "execution/login/LoginEvent.h"

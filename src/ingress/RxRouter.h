@@ -1,7 +1,7 @@
 #pragma once
 
-#include "net/packet/Packet.h"
-#include "net/packet/PacketParser.h"
+#include "packet/Packet.h"
+#include "packet/PacketParser.h"
 #include "session/SessionManager.h"
 
 #include <memory>

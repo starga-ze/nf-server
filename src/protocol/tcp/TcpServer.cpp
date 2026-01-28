@@ -2,9 +2,9 @@
 #include "util/Logger.h"
 #include "ingress/RxRouter.h"
 #include "util/ThreadManager.h"
-#include "net/packet/Packet.h"
-#include "net/packet/ParsedPacketTypes.h"
-#include "net/tls/TlsServer.h"
+#include "packet/Packet.h"
+#include "packet/ParsedPacketTypes.h"
+#include "protocol/tls/TlsServer.h"
 
 #include <unistd.h>
 #include <fcntl.h>

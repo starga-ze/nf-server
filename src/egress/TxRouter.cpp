@@ -1,9 +1,9 @@
 #include "TxRouter.h"
 #include "util/Logger.h"
 
-#include "net/tls/TlsServer.h"
-#include "net/tcp/TcpServer.h"
-#include "net/udp/UdpServer.h"
+#include "protocol/tls/TlsServer.h"
+#include "protocol/tcp/TcpServer.h"
+#include "protocol/udp/UdpServer.h"
 
 TxRouter::TxRouter(TlsServer *tls, TcpServer *tcp, UdpServer *udp, SessionManager *sessionManager)
         : m_tlsServer(tls),

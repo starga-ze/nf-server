@@ -1,5 +1,5 @@
 #include "PacketBuilder.h"
-#include "net/packet/Packet.h"
+#include "packet/Packet.h"
 #include "session/SessionManager.h"
 #include "util/Logger.h"
 

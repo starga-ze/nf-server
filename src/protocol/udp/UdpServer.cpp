@@ -3,7 +3,7 @@
 
 #include "ingress/RxRouter.h"
 #include "util/ThreadManager.h"
-#include "net/packet/Packet.h"
+#include "packet/Packet.h"
 
 #include <unistd.h>
 #include <fcntl.h>

@@ -1,5 +1,5 @@
 #include "execution/Action.h"
-#include "net/packet/ParsedPacketTypes.h"
+#include "packet/ParsedPacketTypes.h"
 #include <memory>
 
 class LoginBuilder

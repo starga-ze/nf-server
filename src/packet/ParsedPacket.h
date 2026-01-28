@@ -1,8 +1,8 @@
 #pragma once
 
-#include "net/packet/Packet.h"
-#include "net/packet/ParsedPacketTypes.h"
-#include "net/packet/EventPacket.h"
+#include "packet/Packet.h"
+#include "packet/ParsedPacketTypes.h"
+#include "packet/EventPacket.h"
 
 #include <vector>
 #include <cstdint>

@@ -1,7 +1,7 @@
 // Session.h
 #pragma once
 
-#include "net/packet/ParsedPacket.h" // Protocol, ConnInfo
+#include "packet/ParsedPacket.h" // Protocol, ConnInfo
 #include <cstdint>
 
 enum class SessionState : uint8_t {

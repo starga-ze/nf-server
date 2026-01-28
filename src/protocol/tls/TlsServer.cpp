@@ -1,6 +1,6 @@
 #include "TlsServer.h"
 #include "util/Logger.h"
-#include "net/packet/Packet.h"
+#include "packet/Packet.h"
 #include "ingress/RxRouter.h"
 #include "util/ThreadManager.h"
 

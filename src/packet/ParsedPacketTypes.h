@@ -55,7 +55,7 @@
  */
 
 
-#include "net/packet/Packet.h"
+#include "packet/Packet.h"
 
 enum class PacketVersion : uint8_t {
     V1 = 1,

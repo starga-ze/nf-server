@@ -1,7 +1,7 @@
 #include "util/Logger.h"
 #include "ingress/EventFactory.h"
 #include "execution/login/LoginParser.h"
-#include "net/packet/ParsedPacket.h"
+#include "packet/ParsedPacket.h"
 
 std::unique_ptr <Event> EventFactory::create(ParsedPacket &parsed) {
 

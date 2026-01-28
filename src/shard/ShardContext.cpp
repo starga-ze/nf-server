@@ -1,8 +1,9 @@
-#include "execution/shard/ShardContext.h"
+#include "shard/ShardContext.h"
+
+#include "shard/ShardManager.h"
 
 #include "execution/login/LoginContext.h"
 #include "execution/world/WorldContext.h"
-#include "execution/shard/ShardManager.h"
 
 ShardContext::ShardContext(int shardIdx, ShardManager *shardManager, DbManager *dbManager)
         : m_shardIdx(shardIdx),

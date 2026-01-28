@@ -1,7 +1,7 @@
 #include "RxRouter.h"
 #include "util/Logger.h"
 #include "ingress/EventFactory.h"
-#include "execution/shard/ShardManager.h"
+#include "shard/ShardManager.h"
 #include "execution/Event.h"
 
 RxRouter::RxRouter(ShardManager *shardManager, SessionManager *sessionManager) :

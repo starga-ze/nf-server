@@ -1,6 +1,6 @@
 #pragma once
 
-#include "net/packet/ParsedPacketTypes.h"
+#include "packet/ParsedPacketTypes.h"
 
 class ShardContext;
 

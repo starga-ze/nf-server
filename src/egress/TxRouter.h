@@ -1,8 +1,8 @@
 #pragma once
 
 #include "session/SessionManager.h"
-#include "net/packet/Packet.h"
-#include "net/packet/PacketBuilder.h"
+#include "packet/Packet.h"
+#include "packet/PacketBuilder.h"
 
 #include <memory>
 #include <cstdint>
